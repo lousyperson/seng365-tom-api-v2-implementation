@@ -1,0 +1,26 @@
+{
+  "name": "crowdfunding",
+  "version": "0.0.2",
+  "repository": {
+    "type": "git",
+    "url": "https://eng-git.canterbury.ac.nz/seng365-2017/api-v2-implementation.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "async-each": "^1.0.1",
+    "body-parser": "^1.17.2",
+    "bunyan": "^1.8.12",
+    "convict": "^4.0.0",
+    "express": "^4.15.4",
+    "mysql": "^2.14.1",
+    "z-schema": "^3.18.3"
+  },
+  "scripts": {
+    "start": "node server.js | bunyan",
+    "test": "mocha ./test/test*.js --reporter min"
+  },
+  "devDependencies": {
+    "mocha": "^3.5.0",
+    "chai": "^4.1.1"
+  }
+}
