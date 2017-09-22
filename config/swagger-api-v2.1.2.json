@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "",
-    "version": "2.1.0",
+    "version": "2.1.2",
     "title": "Crowdfunding API for SENG365"
   },
   "basePath": "/api/v2",
@@ -41,12 +41,14 @@
             "in": "query",
             "name": "startIndex",
             "type": "integer",
+            "minimum": 0,
             "description": "Number of items to skip before returning result [optional]"
           },
           {
             "in": "query",
             "name": "count",
             "type": "integer",
+            "minimum": 1,
             "description": "Number of items to return [optional]"
           },
           {
@@ -59,12 +61,14 @@
             "in": "query",
             "name": "creator",
             "type": "integer",
+            "minimum": 1,
             "description": "Only return projects with this id as a creator [optional]"
           },
           {
             "in": "query",
             "name": "backer",
             "type": "integer",
+            "minimum": 1,
             "description": "Only return projects which have a pledge by this id [optional]"
           }
         ],
@@ -93,7 +97,8 @@
             "name": "body",
             "schema": {
               "$ref": "#/definitions/ProjectCreation"
-            }
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -101,6 +106,9 @@
             "description": "OK",
             "schema": {
               "type": "object",
+              "required": [
+                "id"
+              ],
               "properties": {
                 "id": {
                   "type": "integer",
@@ -167,13 +175,7 @@
             "in": "body",
             "name": "open",
             "schema": {
-              "type": "object",
-              "properties": {
-                "open": {
-                  "type": "boolean",
-                  "description": "Whether the project should be open"
-                }
-              }
+              "$ref": "#/definitions/Status"
             },
             "required": true
           }
@@ -833,8 +835,23 @@
         }
       }
     },
+    "Status": {
+      "type": "object",
+      "required": [
+        "open"
+      ],
+      "properties": {
+        "open": {
+          "type": "boolean",
+          "description": "if the project is open to new pledges"
+        }
+      }
+    },
     "CreditCard": {
       "type": "object",
+      "required": [
+        "authToken"
+      ],
       "properties": {
         "authToken": {
           "type": "string",

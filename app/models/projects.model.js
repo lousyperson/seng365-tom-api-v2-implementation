@@ -17,18 +17,55 @@ const
     asTransaction = require('./transaction'),
     each = require('async-each'); // lighter-weight than the full `async` module
 
+
 /**
  * return all projects between `limit` and `limit+offset` when ordered by creation timestamp
  *
- * @param limit
- * @param offset
+ * @param options   assume these have been validated upstream
  * @param done
  */
-const getAll = (limit, offset, done) => {
-    db.get().query('SELECT id, title, subtitle, open FROM projects ORDER BY ts DESC LIMIT ? OFFSET ?',
-        [limit, offset],
+const getAll = (options, done) => {
+
+    let whereConditions = [],
+        joinTables = '',
+        joinCondition = '',
+        whereCondition = '',
+        tableSources = {'creator':'creators', 'backer': 'pledges'};
+
+    // set default options where defaults apply - other options are either filter-or-not
+    if (!options.hasOwnProperty('count')) options.count=10000;
+    if (!options.hasOwnProperty('startIndex')) options.startIndex=0;
+
+    // construct SQL for option open
+    if (options.hasOwnProperty('open')) whereConditions.push(`pr.open=${options['open']}`)
+
+    // construct SQL for JOINs for options for creator and backer
+    let parameterKeys = Object.keys(options).filter(option => Object.keys(tableSources).includes(option));
+    if (parameterKeys.length > 0) {
+        let tables = parameterKeys.map(option => tableSources[option]);
+        joinTables = ' JOIN (' + tables.join(', ') + ')';
+        joinCondition = ' ON ' + tables.map(table => `pr.id=${table}.projectid`).join(' AND ');
+        whereConditions = whereConditions.concat(parameterKeys.map(option => `${tableSources[option]}.userid=${options[option]}`));
+    }
+
+    // construct SQL for combined WHERE condition
+    if (whereConditions.length > 0) whereCondition = ' WHERE ' + whereConditions.join(' AND ');
+
+    // finalise SQL
+    let sql = `SELECT pr.id, pr.title, pr.subtitle, pr.open, exists(select 1 from images where images.projectid=2) as hasImage
+     FROM projects pr ${joinTables}${joinCondition}${whereCondition}
+     ORDER BY ts DESC LIMIT ? OFFSET ?`;
+    log.debug(sql, [options.count, options.startIndex]);
+
+    db.get().query(sql,
+        [options.count, options.startIndex],
         (err, projects) => {
-            projects.map(project => Object.assign(project, {imageUri: `/projects/${project.id}/image`}));
+            // if image exists, then set imageUri correctly
+            projects.map(project => {
+                if (project.hasImage) project.imageUri = `/projects/${project.id}/image`;
+                delete project.hasImage;
+                return project
+            });
             projects.map(project => project.open = Boolean(project.open)); // munge mysql int boolean to proper boolean
             return done(err, projects)
         }
@@ -49,7 +86,10 @@ const getOne = (projectId, done) => {
     let _getProject = projectId => {
         return new Promise((resolve, reject) => {
             db.get().query(
-                'SELECT title, subtitle, description, target, open, unix_timestamp(ts)*1000 as creationDate from projects WHERE id=?',
+                'SELECT title, subtitle, description, target, open, ' +
+                'unix_timestamp(ts)*1000 as creationDate, ' +
+                'exists(select 1 from images where images.projectid=2) as hasImage ' +
+                'from projects WHERE id=?',
                 projectId,
                 (err, projects) => {
                     if (err) return reject(err);
@@ -115,20 +155,12 @@ const getOne = (projectId, done) => {
         })
     };
 
-    let _getImage = projectId => {
-        return new Promise((resolve, reject) => {
-            imagesModel.get(projectId, (err, results) => {
-                if (err) return reject(err);
-                resolve(results);
-            })
-        })
-    };
-
     // get all components of the ProjectDetails with Promise.all, and combine into the response
     // if project not found, return null
 
-   Promise.all([_getProject(projectId), _getCreators(projectId), _getRewards(projectId), _getProgress(projectId), _getBackers(projectId), _getImage(projectId)])
+   Promise.all([_getProject(projectId), _getCreators(projectId), _getRewards(projectId), _getProgress(projectId), _getBackers(projectId)])
         .then(results => {
+
             if (results[0] === null) return done(null, null);
             let projectDetails = results[0]; // title, subtitle, description, target, open, and creationDate
             projectDetails.id = projectId;
@@ -137,7 +169,10 @@ const getOne = (projectId, done) => {
             // optional elements
             if (results[3]) projectDetails.progress = results[3];
             if (results[4]) projectDetails.backers = results[4];
-            if (results[5]) projectDetails.imageUri = `/projects/${projectId}/image`;
+
+            if (projectDetails.hasImage) projectDetails.imageUri = `/projects/${projectId}/image`;
+            delete projectDetails.hasImage;
+
             return done(null, projectDetails)
         })
         .catch(err => {

@@ -10,28 +10,28 @@ const
     rewards = require('../models/rewards.model'),
     images = require('../models/images.model'),
     pledges = require('../models/pledges.model'),
-    validator = require('../lib/validator'),
-    schema = require('../../config/api.schema');
+    validator = require('../lib/validator');
 
 
 /**
- * list all projects, obeying startIndex and count if provided in req.query
+ * list all projects, filtering by req.query parameters
  */
-const list = function (req, res) {
-    // pick up startIndex and count from req.query
-    let limit = Number.isInteger(parseInt(req.query.count)) ? parseInt(req.query.count) : 10000; // arbitrary limit on number of projects to display - better to notify client if too many
-    let offset = Number.isInteger(parseInt(req.query.startIndex)) ? parseInt(req.query.startIndex): 0;
-
-    projects.getAll(limit, offset, (err, projects) => {
-        // validate response
-        if (projects.length>0)
-            if (!validator.isValidSchema(projects, 'definitions.ProjectsOverview')) {
-                log.warn(JSON.stringify(projects, null, 2));
-                log.warn(validator.getLastErrors());
-                return res.sendStatus(500);
-            }
-        return res.status(200).json(projects);
-    });
+const list = (req, res) => {
+    validator.areValidParameters(req.query)
+        .then(options => {
+            projects.getAll(options, (err, projects) => {
+                // validate response
+                if (projects.length > 0) {
+                    if (!validator.isValidSchema(projects, 'definitions.ProjectsOverview')) {
+                        log.warn(JSON.stringify(projects, null, 2));
+                        log.warn(validator.getLastErrors());
+                        return res.sendStatus(500);
+                    }
+                }
+                return res.status(200).json(projects);
+            })
+        })
+        .catch(() => res.status(400))
 };
 
 /**
@@ -82,18 +82,18 @@ const update = (req, res) => {
     let projectId = parseInt(req.params.id);
     if (!validator.isValidId(projectId)) return res.sendStatus(404);
 
-    if (!req.body) {
-        log.warn(`projects.controller.update: missing body to request`);
-        return res.sendStatus(400);
-    }
-    if (!req.body.hasOwnProperty('open') || typeof req.body.open !== 'boolean') { // TODO: replace by section in schema to maintain single source of validity
+    if (!validator.isValidSchema(req.body, 'definitions.Status')) {
         log.warn(`projects.controller.update: bad change of project status ${JSON.stringify(req.body)}`);
         return res.sendStatus(400);
     }
     else {
-        projects.update(projectId, req.body.open, err => {
-            if (err) return res.sendStatus(404);
-            return res.sendStatus(201)
+        projects.isOpen(projectId, (err, open) => {
+            if (err) return res.sendStatus(500);
+            if (!open) return res.sendStatus(403);
+            projects.update(projectId, req.body.open, err => {
+                if (err) return res.sendStatus(404);
+                return res.sendStatus(201)
+            })
         })
     }
 };

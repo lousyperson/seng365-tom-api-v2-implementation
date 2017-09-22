@@ -11,10 +11,10 @@
  */
 
 const
-    log = require('../app/lib/logger')({name: __filename, level: 'debug'}),
     chai = require('chai'),
     should = chai.should(),
     config = require('../config/config.js'),
+    log = require('../app/lib/logger')({level: config.get('log.level')}),
     projects = require('../app/models/projects.model'),
     users = require('../app/models/users.model'),
     rewards = require('../app/models/rewards.model'),
@@ -30,7 +30,6 @@ const projectTemplate = (username, creatorId) => {
         title: "My awesome project",
         subtitle: "More awesomeness",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor inccreatorIdcreatorIdunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupcreatorIdatat non procreatorIdent, sunt in culpa qui officia deserunt mollit anim creatorId est laborum.",
-        imageUri: "/projects/0/image",
         target: 123400,
         creators: [
             {
@@ -167,19 +166,33 @@ describe('given a clean db', function() {
 
     describe('With a user and a project', function(done) {
 
-        let user1Id, project1Id;
+        let user1Id, project1Id, project1, earliestDate;
 
         beforeEach('Create project', function() {
+            earliestDate = Math.floor(new Date(Date.now()).getTime()/1000)*1000; // now, in UTC seconds (precision of MySQL clock)
             return createUser({username: 'loki', email:'loki@valhalla.biz', password:'toki'})
                 .then(_id => user1Id = _id)
-                .then(() => createProject(projectTemplate('loki', user1Id)))
+                .then(() => {
+                    project1 = projectTemplate('loki', user1Id);
+                    return createProject(project1)
+                })
                 .then(_id => project1Id = _id);
         });
 
         it('get project', function (done) {
+
             projects.getOne(project1Id, (err, project) => {
                 should.equal(err, null);
                 validator.isValidSchema(project, 'definitions.ProjectDetails');
+                project.id.should.equal(project1Id);
+                project.title.should.equal(project1.title);
+                project.subtitle.should.equal(project1.subtitle);
+                project.target.should.equal(project1.target);
+                project.open.should.be.true;
+                project.creationDate.should.be.within(earliestDate, new Date(Date.now()).getTime());  // all times UTC
+                project.creators.should.have.lengthOf(1);
+                project.creators[0].id.should.equal(user1Id);
+                project.creators[0].username.should.equal('loki')
                 return done();
             })
         });
@@ -260,7 +273,7 @@ describe('given a clean db', function() {
         });
 
         it('get projects with offset 1 (last project)', function (done) {
-            projects.getAll({limit:10, offset:1}, (err, results) => {
+            projects.getAll({count:10, startIndex:1}, (err, results) => {
                 should.equal(err, null);
                 results.should.have.lengthOf(1);
                 validator.isValidSchema(results, 'definitions.ProjectsOverview').should.be.true;
@@ -270,7 +283,7 @@ describe('given a clean db', function() {
         });
 
         it('get projects with limit 1 (first project)', function (done) {
-            projects.getAll({limit:1}, (err, results) => {
+            projects.getAll({count:1}, (err, results) => {
                 should.equal(err, null);
                 results.should.have.lengthOf(1);
                 validator.isValidSchema(results, 'definitions.ProjectsOverview').should.be.true;
@@ -282,8 +295,16 @@ describe('given a clean db', function() {
         it('get projects with open=true', function (done) {
             projects.getAll({open:true}, (err, results) => {
                 should.equal(err, null);
-                results.should.have.lengthOf(1);
+                results.should.have.lengthOf(2);
                 validator.isValidSchema(results, 'definitions.ProjectsOverview').should.be.true;
+                return done();
+            })
+        });
+
+        it('get projects with open=false', function (done) {
+            projects.getAll({open:false}, (err, results) => {
+                should.equal(err, null);
+                results.should.have.lengthOf(0);
                 return done();
             })
         });
@@ -309,7 +330,7 @@ describe('given a clean db', function() {
             return createUser({username: 'loki', email:'loki@valhalla.biz', password:'toki'})
                 .then(_id => user1Id = _id)
                 .then(() => createUser({username: 'toki', email:'toki@valhalla.biz', password:'loki'}))
-                .then(_id => user1Id = _id)
+                .then(_id => user2Id = _id)
                 .then(() => createProject(projectTemplate('loki', user1Id))) // user1 creates project1
                 .then(_id => project1Id = _id)
                 .then(() => createProject(projectTemplate('toki', user2Id))) // user2 creates project2
@@ -323,8 +344,6 @@ describe('given a clean db', function() {
                 should.equal(err, null);
                 results.should.have.lengthOf(1);
                 validator.isValidSchema(results, 'definitions.ProjectsOverview').should.be.true;
-                results[0].creators[0].username.should.equal('loki');
-                results[0].backers[0].id.should.equal(user1Id);
                 results[0].id.should.equal(project1Id);
                 return done();
             })
@@ -335,8 +354,6 @@ describe('given a clean db', function() {
                 should.equal(err, null);
                 results.should.have.lengthOf(1);
                 validator.isValidSchema(results, 'definitions.ProjectsOverview').should.be.true;
-                results[0].backers[0].username.should.equal('loki');
-                results[0].backers[0].id.should.equal(user1Id);
                 results[0].id.should.equal(project2Id);
                 return done();
             })

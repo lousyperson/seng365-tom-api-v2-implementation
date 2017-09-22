@@ -15,7 +15,7 @@ let
         log: {
             level: {
                 format: String,
-                default: 'debug',
+                default: 'info',
                 arg: 'log-level',
                 env: 'LOG_LEVEL'
             }
@@ -63,7 +63,6 @@ let
             }
         }
     });
-
 
 config.loadFile(path.join(__dirname, `${config.get('env')}.json`)).validate();
 module.exports = config;

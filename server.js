@@ -6,7 +6,7 @@
 
 const
     config = require('./config/config.js'),
-    log = require('./app/lib/logger')({name: 'myapp', level: config.get('log.level')}),
+    log = require('./app/lib/logger')({level: config.get('log.level')}),
     initDb = require('./app/lib/db.init'),
     initApp = require('./app/app'),
     port = config.get('port'),

@@ -9,12 +9,11 @@ const
 
 let
     logger,
-    createLogger = (options={name: 'myapp'}) => {
-
-    if (logger) return logger;
-
-    logger = bunyan.createLogger(options);
-    return logger;
+    createLogger = options => {
+        options = Object.assign({name: 'crowdfunding'}, options); // name defaults to crowdfunding
+        if (logger) return logger;
+        logger = bunyan.createLogger(options);
+        return logger;
     };
 
 module.exports = createLogger;

@@ -3,18 +3,21 @@
 /**
  * validation functions for checking parameters and schemas
  *
- * the heavy lifting is mostly done by ZSchema
+ * the heavy lifting is mostly done by ZSchema and swagger-parameters
  */
 
 const
     ZSchema = require('z-schema'),
-    schema = require('../../config/api.schema'),
+    schema = require('../../config/swagger-api-v2.1.2.json'),
     options = {}, // no specific options for ZSchema...
-    validator = new ZSchema(options);
+    schemaValidator = new ZSchema(options),
+    parameterValidator = require('swagger-parameters');
+
 
 /**
  * validate :id parameters
  * we make no assumptions about the type of the provided :id, but check that valid == an integer > 0
+ * could be validated against a schema of { 'type': 'integer', 'minimum': 0 }
  *
  * @param id    of any Type
  * @returns {boolean}
@@ -25,19 +28,39 @@ const validateId = id => {
 };
 
 /**
+ * validate query parameters using swagger-parameters, and return a parsed query with types corrected to those in schema
+ * only for GET /projects as this is currently the only endpoint with query parameters
+ *
+ * as we're only checking queries, and not paths or headers, instead of swagger-parameters {query:.., path:.., header:...} require just a req.query
+ * @param actual    req.query object
+ * @param done
+ */
+const validateParameters = actual => {
+    return new Promise((resolve, reject) => {
+        let parse = parameterValidator(schema.paths['/projects'].get.parameters);
+        parse({query: actual}, (err, result) => {
+            if (err) return reject(err);
+            return resolve(result.query);
+        })
+    })
+
+};
+
+/**
  * validate some object against the API schema
  *
  * @param actual        the object to be validated (usually a req.body)
  * @param schemaPath    if supplied, sub-schema to be used for validation (passed directly to ZSchema schemaPath)
  */
 const validateSchema = (actual, schemaPath = 'definitions') => {
-    return validator.validate(actual, schema,  {schemaPath: schemaPath })
-}
+    return schemaValidator.validate(actual, schema,  {schemaPath: schemaPath })
+};
 
-const getLastErrors = () => validator.getLastErrors();
+const getLastErrors = () => schemaValidator.getLastErrors();
 
 module.exports = {
     isValidSchema: validateSchema,
+    areValidParameters: validateParameters,
     getLastErrors: getLastErrors,
     isValidId: validateId
 };
