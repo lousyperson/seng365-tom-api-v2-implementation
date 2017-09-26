@@ -3,6 +3,7 @@
 const
     log = require('./lib/logger')(),
     express = require('express'),
+    cors = require('cors'),
     app = express(),
     router = express.Router(),
     db = require('./lib/db');
@@ -35,6 +36,9 @@ module.exports = config => {
                     log.info(`${req.method} ${req.originalUrl}`);
                     next();
                 });
+
+                app.use(cors());  // enable CORS for all origins
+                app.options('*', cors());  // enable CORS pre-flight, principally in our case for DELETE and PUT requests
 
                 // setup basepath
                 app.use(config.get('basepath'), router);
