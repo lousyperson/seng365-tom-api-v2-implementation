@@ -101,12 +101,12 @@ const remove = (req, res) => {
 const login = (req, res) => {
     let username = req.query.username;
     let password = req.query.password;
-    users.authenticate(username, password, authenticated => {
-         if (!authenticated)
+    users.authenticate(username, password, (err, id) => {
+         if (err)
              res.status(400).send('Invalid username/password supplied');
         else
             users.setToken(username, (err, token) => {
-                res.status(200).json({token: token})
+                res.status(200).json({id:id, token: token})
             });
     })
 };

@@ -69,6 +69,7 @@ const rewardsTemplate = () => {
 
 
 const createUser = user => {
+    log.info(`creating user ${JSON.stringify(user)}`);
     return new Promise((resolve, reject) => {
         users.insert(user, (err, userId) => {
             if (err) return reject(err);
@@ -78,6 +79,7 @@ const createUser = user => {
 };
 
 const createProject = project => {
+    log.info(`creating project ${JSON.stringify(project)}`);
     return new Promise((resolve, reject) => {
         projects.insert(project, (err, projectId) => {
             if (err) return reject(err);
@@ -87,6 +89,7 @@ const createProject = project => {
 };
 
 const pledgeToProject = (projectId, userId) => {
+    log.info(`pledging as ${userId} to project ${projectId}`);
     return new Promise((resolve, reject) => {
         pledges.insert(projectId, pledgeTemplate(userId, false, 250), (err, pledgeId) => {
             if (err) return reject(err);
@@ -96,6 +99,7 @@ const pledgeToProject = (projectId, userId) => {
 };
 
 describe('given a clean db', function() {
+    this.timeout(5000);
     
     beforeEach(`clean db`, function() {
         return initDb(config.get('db'))
@@ -127,11 +131,12 @@ describe('given a clean db', function() {
         });
 
         it('delete user and check auth', function (done) {
-            users.authenticate('loki', 'toki', result => {
-                result.should.be.true;
+            users.authenticate('loki', 'toki', (err, id) => {
+                err.should.be.false;
+                id.should.equal(user1Id);
                 users.remove(user1Id, (err, results) => {
-                    users.authenticate('loki', 'toki', result => {
-                        result.should.be.false;
+                    users.authenticate('loki', 'toki', (err, id) => {
+                        err.should.be.true;
                         return done();
                     })
                 })
@@ -139,11 +144,12 @@ describe('given a clean db', function() {
         });
 
         it('delete user and check idFromToken', function (done) {
-            users.authenticate('loki', 'toki', result => {
-                result.should.be.true;
+            users.authenticate('loki', 'toki', (err, id) => {
+                err.should.be.false;
+                id.should.equal(user1Id);
                 users.remove(user1Id, (err, results) => {
-                    users.authenticate('loki', 'toki', result => {
-                        result.should.be.false;
+                    users.authenticate('loki', 'toki', (err, id) => {
+                        err.should.be.true;
                         return done();
                     })
                 })

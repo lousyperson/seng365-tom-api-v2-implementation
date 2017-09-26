@@ -99,14 +99,15 @@ const remove = (id, done) => {
  */
 const authenticate = (username, password, done) => {
     db.get().query(
-        'SELECT hash, salt FROM users WHERE username=? AND deleted=false',
+        'SELECT id, hash, salt FROM users WHERE username=? AND deleted=false',
         [username],
         (err, results) => {
-            if (err || results.length === 0)
-                return done(false);
+            if (err || results.length !== 1)
+                return done(true); // return error = true (failed auth)
             else {
                 let salt = Buffer.from(results[0].salt, 'hex');
-                return done(results[0].hash === getHash(password, salt))
+                if (results[0].hash === getHash(password, salt)) return done(false, results[0].id);
+                return done(true); // failed password check
             }
         }
     )
