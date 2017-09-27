@@ -31,6 +31,13 @@ describe('given a request body', function() {
         });
     });
 
+    describe('given a body with extra element', function() {
+        it('should fail validation', function(done) {
+            validator.isValidSchema({username:"toki", extra:true, email:"toki@valhalla.biz", password:"toki"}, 'definitions.User').should.be.false;
+            done();
+        })
+    });
+
     describe('given "creator" parameter less than minimum', function() {
         it('should fail validation', function () {
             return validator.areValidParameters({creator: -1})

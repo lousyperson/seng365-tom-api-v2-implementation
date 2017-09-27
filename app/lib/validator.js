@@ -8,8 +8,8 @@
 
 const
     ZSchema = require('z-schema'),
-    schema = require('../../config/swagger-api-v2.1.2.json'),
-    options = {}, // no specific options for ZSchema...
+    schema = require('../../config/swagger-api-v2.1.3.json'),
+    options = {assumeAdditional: true}, // ban additional properties and array items from the schema (no unexpected things)
     schemaValidator = new ZSchema(options),
     parameterValidator = require('swagger-parameters');
 
