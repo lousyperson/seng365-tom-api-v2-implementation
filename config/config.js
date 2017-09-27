@@ -15,7 +15,7 @@ let
         log: {
             level: {
                 format: String,
-                default: 'info',
+                default: 'debug',
                 arg: 'log-level',
                 env: 'LOG_LEVEL'
             }

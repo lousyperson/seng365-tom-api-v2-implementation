@@ -54,12 +54,15 @@ const getAll = (options, done) => {
     // finalise SQL
     let sql = `SELECT pr.id, pr.title, pr.subtitle, pr.open, exists(select 1 from images where images.projectid=2) as hasImage
      FROM projects pr ${joinTables}${joinCondition}${whereCondition}
-     ORDER BY ts DESC LIMIT ? OFFSET ?`;
+     ORDER BY pr.ts DESC LIMIT ? OFFSET ?`;
     log.debug(sql, [options.count, options.startIndex]);
 
     db.get().query(sql,
         [options.count, options.startIndex],
         (err, projects) => {
+            if (err) return done(err);
+            if (!projects) return done(err, null);
+
             // if image exists, then set imageUri correctly
             projects.map(project => {
                 if (project.hasImage) project.imageUri = `/projects/${project.id}/image`;
@@ -128,7 +131,8 @@ const getOne = (projectId, done) => {
         return new Promise((resolve, reject) => {
             pledgesModel.getTotals(projectId, (err, totals) => {
                 if (err) return reject(err);
-                resolve({currentPledged: totals.total, numberOfBackers: totals.backers})
+                if (!totals) return resolve(null);
+                resolve({currentPledged: totals.currentPledged, numberOfBackers: totals.numberOfBackers})
             })
         })
 
@@ -142,14 +146,13 @@ const getOne = (projectId, done) => {
                     (backer, callback) => {
                         // don't include deleted users in backers
                         usersModel.getOne(backer.userid, false, (err, user) => {
-                            // extract the fields needed for the creators section of the scheme
                             let username = backer.anonymous ? 'anonymous' : user.username;
-                            callback(err, {id: user.id, username: username})
+                            callback(err, {id: user.id, username: username, amount: backer.amount})
                         })
                     },
                     (err, backers) => {
                         if (err) return reject(err);
-                        resolve(backers);
+                        resolve(backers); // will resolve as null if no backers
                     })
             })
         })

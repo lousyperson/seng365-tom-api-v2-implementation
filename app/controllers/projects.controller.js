@@ -158,8 +158,9 @@ const updateRewards = (req, res) => {
     let projectId = parseInt(req.params.id);
     if (!validator.isValidId(projectId)) return res.sendStatus(404);
 
-    if (!validator.isValidSchema(req.body, 'definitions.Rewards')) {
-        log.warn(`users.controller.updateRewards: bad rewards ${JSON.stringify(req.body)}`);
+    if (!validator.isValidSchema(req.body, 'definitions.RewardsCreation')) {
+        log.warn(`projects.controller.updateRewards: bad rewards ${JSON.stringify(req.body)}`);
+        log.warn(validator.getLastErrors());
         return res.sendStatus(400);
     }
     else {
@@ -182,7 +183,8 @@ const addPledge = (req, res) => {
     if (!validator.isValidId(projectId)) return res.sendStatus(404);
 
     if (!validator.isValidSchema(req.body, 'definitions.Pledge')) {
-        log.warn(`users.controller.addPledge: bad pledge ${JSON.stringify(req.body)}`);
+        log.warn(`projects.controller.addPledge: bad pledge ${JSON.stringify(req.body)}`);
+        log.warn(validator.getLastErrors());
         return res.sendStatus(400);
     }
     else {

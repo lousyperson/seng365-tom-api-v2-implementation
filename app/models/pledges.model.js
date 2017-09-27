@@ -17,7 +17,7 @@ const
  */
 const get = (projectId, done) => {
     db.get().query(
-        'SELECT * from pledges WHERE projectid=?',
+        'SELECT * from pledges WHERE projectid=? ORDER BY ts DESC',
         projectId,
         (err, pledges) => done(err, pledges))
 };
@@ -30,13 +30,16 @@ const get = (projectId, done) => {
  */
 const getTotals = (projectId, done) => {
     db.get().query(
-        'SELECT SUM(amount) AS total, COUNT(DISTINCT userid) AS backers from pledges WHERE projectid=?',
+        'SELECT SUM(amount) AS total, anonymous, COUNT(DISTINCT userid) AS backers from pledges WHERE projectid=? GROUP BY anonymous',
         projectId,
-        (err, totals) => {
+        (err, results) => {
             if (err) return done(err);
-            if (totals.length === 0) return done(err, null);
-            if (totals[0].backers === 0) totals[0].total = 0;
-            done(err, totals[0])
+            if (results.length === 0) return done(err, null);
+            // now aggregate separate totals for anonymous and non-anonymous backers
+            let totals = {};
+            totals.currentPledged = results.reduce((acc, cur) => acc + cur.total, 0);  // aggregate anonymous and non-anonymous totals
+            totals.numberOfBackers = results.map(result => result.anonymous ? 1 : result.backers).reduce((acc, cur) => acc + cur, 0);  // group all anonymous backers
+            done(err, totals)
         }
     );
 };

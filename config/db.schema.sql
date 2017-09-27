@@ -12,7 +12,7 @@ CREATE TABLE projects (
             description TEXT,
             open BOOLEAN DEFAULT TRUE,
             target INT NOT NULL,
-            ts DATETIME DEFAULT CURRENT_TIMESTAMP,
+            ts DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
             PRIMARY KEY (id));
 
 CREATE TABLE images (id INT AUTO_INCREMENT,
@@ -53,6 +53,7 @@ CREATE TABLE rewards (id INT AUTO_INCREMENT,
               amount INT,
               anonymous BOOLEAN DEFAULT FALSE,
               cardToken VARCHAR(32),
+              ts DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
               PRIMARY KEY(id),
               FOREIGN KEY (projectid) REFERENCES projects(id),
               FOREIGN KEY (userid) REFERENCES users(id));

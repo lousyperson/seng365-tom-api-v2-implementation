@@ -283,7 +283,7 @@ describe('given a clean db', function() {
                 should.equal(err, null);
                 results.should.have.lengthOf(1);
                 validator.isValidSchema(results, 'definitions.ProjectsOverview').should.be.true;
-                results[0].title.should.equal('Project2'); // ordered from least recent to most recent
+                results[0].title.should.equal('Project1'); // ordered from most recent to least recent
                 return done();
             })
         });
@@ -293,7 +293,7 @@ describe('given a clean db', function() {
                 should.equal(err, null);
                 results.should.have.lengthOf(1);
                 validator.isValidSchema(results, 'definitions.ProjectsOverview').should.be.true;
-                results[0].title.should.equal('Project1'); // ordered from least recent to most recent
+                results[0].title.should.equal('Project2'); // ordered from most recent to least recent
                 return done();
             })
         });
@@ -315,16 +315,37 @@ describe('given a clean db', function() {
             })
         });
 
-        it('check totals', function (done) {
+        it('check totals with no pledges', function (done) {
+            pledges.getTotals(project1Id, (err, totals) => {
+                should.equal(totals, null);
+                return done();
+            })
+        });
+
+        it('check totals with single pledge', function (done) {
             pledges.insert(project1Id, pledgeTemplate(user1Id, false, 250), (err, id) => {
                 pledges.getTotals(project1Id, (err, totals) => {
                     should.not.equal(totals, null);
-                    totals.total.should.equal(250);
-                    totals.backers.should.equal(1);
+                    totals.currentPledged.should.equal(250);
+                    totals.numberOfBackers.should.equal(1);
                     return done();
                 })
             })
         });
+
+        it('check totals for anonymous and non-anonymous', function (done) {
+            pledges.insert(project1Id, pledgeTemplate(user1Id, false, 250), (err, id) => {
+                pledges.insert(project1Id, pledgeTemplate(user1Id, true, 200), (err, id) => {
+                    pledges.getTotals(project1Id, (err, totals) => {
+                        should.not.equal(totals, null);
+                        totals.currentPledged.should.equal(450);
+                        totals.numberOfBackers.should.equal(2); // userId1 and anonymous
+                        return done();
+                    })
+                })
+            })
+        });
+
 
     });
 
