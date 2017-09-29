@@ -130,25 +130,43 @@ describe('given a clean db', function() {
                 .then(id => id.should.equal(1))
         });
 
-        it('delete user and check auth', function (done) {
-            users.authenticate('loki', 'toki', (err, id) => {
+        it('check successful auth by username', function (done) {
+            users.authenticate('loki', '', 'toki', (err, id) => {
                 err.should.be.false;
                 id.should.equal(user1Id);
-                users.remove(user1Id, (err, results) => {
-                    users.authenticate('loki', 'toki', (err, id) => {
-                        err.should.be.true;
-                        return done();
-                    })
-                })
+                return done()
             })
         });
 
-        it('delete user and check idFromToken', function (done) {
-            users.authenticate('loki', 'toki', (err, id) => {
+        it('check successful auth by password', function (done) {
+            users.authenticate('', 'loki@valhalla.biz', 'toki', (err, id) => {
+                err.should.be.false;
+                id.should.equal(user1Id);
+                return done()
+            })
+        });
+
+        it('check unsuccessful auth by username', function (done) {
+            users.authenticate('loki', '', 'loki', (err, id) => {
+                err.should.be.true;
+                return done()
+            })
+        });
+
+        it('check unsuccessful auth by email', function (done) {
+            users.authenticate('', 'loki@valhalla.biz', 'loki', (err, id) => {
+                err.should.be.true;
+                return done()
+            })
+        });
+
+        it('delete user and check auth', function (done) {
+            users.authenticate('loki', '', 'toki', (err, id) => {
                 err.should.be.false;
                 id.should.equal(user1Id);
                 users.remove(user1Id, (err, results) => {
-                    users.authenticate('loki', 'toki', (err, id) => {
+                    users.authenticate('loki', '', 'toki', (err, id) => {
+                        console.log(err);
                         err.should.be.true;
                         return done();
                     })

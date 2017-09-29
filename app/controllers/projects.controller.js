@@ -6,6 +6,7 @@
 
 const
     log = require('../lib/logger')(),
+    schema = require('../../config/swagger-api-v2.1.4.json'),
     projects = require('../models/projects.model'),
     rewards = require('../models/rewards.model'),
     images = require('../models/images.model'),
@@ -17,9 +18,9 @@ const
  * list all projects, filtering by req.query parameters
  */
 const list = (req, res) => {
-    validator.areValidParameters(req.query)
-        .then(options => {
-            projects.getAll(options, (err, projects) => {
+    validator.areValidParameters(req.query, schema.paths['/projects'].get.parameters)
+        .then(query => {
+            projects.getAll(query, (err, projects) => {
                 // validate response
                 if (projects.length > 0) {
                     if (!validator.isValidSchema(projects, 'definitions.ProjectsOverview')) {
@@ -31,7 +32,7 @@ const list = (req, res) => {
                 return res.status(200).json(projects);
             })
         })
-        .catch(() => res.status(400))
+        .catch(() => res.sendStatus(400))
 };
 
 /**

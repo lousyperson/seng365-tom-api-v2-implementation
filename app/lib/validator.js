@@ -8,7 +8,7 @@
 
 const
     ZSchema = require('z-schema'),
-    schema = require('../../config/swagger-api-v2.1.3.json'),
+    schema = require('../../config/swagger-api-v2.1.4.json'),
     options = {assumeAdditional: true}, // ban additional properties and array items from the schema (no unexpected things)
     schemaValidator = new ZSchema(options),
     parameterValidator = require('swagger-parameters');
@@ -29,15 +29,15 @@ const validateId = id => {
 
 /**
  * validate query parameters using swagger-parameters, and return a parsed query with types corrected to those in schema
- * only for GET /projects as this is currently the only endpoint with query parameters
  *
  * as we're only checking queries, and not paths or headers, instead of swagger-parameters {query:.., path:.., header:...} require just a req.query
  * @param actual    req.query object
+ * @param schema    parameters schema to validate against
  * @param done
  */
-const validateParameters = actual => {
+const validateParameters = (actual, schema) => {
     return new Promise((resolve, reject) => {
-        let parse = parameterValidator(schema.paths['/projects'].get.parameters);
+        let parse = parameterValidator(schema);
         parse({query: actual}, (err, result) => {
             if (err) return reject(err);
             return resolve(result.query);

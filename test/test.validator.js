@@ -11,7 +11,7 @@ const
     chai = require('chai'),
     should = chai.should(),
     expect = chai.expect,
-    schema = require('../config/swagger-api-v2.1.2.json'),
+    schema = require('../config/swagger-api-v2.1.4.json'),
     validator = require('../app/lib/validator');
 
 
@@ -40,7 +40,7 @@ describe('given a request body', function() {
 
     describe('given "creator" parameter less than minimum', function() {
         it('should fail validation', function () {
-            return validator.areValidParameters({creator: -1})
+            return validator.areValidParameters({creator: -1}, schema.paths['/projects'].get.parameters)
                      .then(() => Promise.reject)
                      .catch(() => Promise.resolve)
             });
@@ -49,7 +49,7 @@ describe('given a request body', function() {
 
     describe('given "open" parameter not a boolean', function() {
         it('should fail validation', function () {
-            return validator.areValidParameters({open: -1})
+            return validator.areValidParameters({open: -1}, schema.paths['/projects'].get.parameters)
                      .then(() => Promise.reject)
                      .catch(() => Promise.resolve)
         });
@@ -58,14 +58,14 @@ describe('given a request body', function() {
 
     describe('given "open" parameter as a boolean', function() {
         it('should pass validation', function () {
-            return validator.areValidParameters({open: true})
+            return validator.areValidParameters({open: true}, schema.paths['/projects'].get.parameters)
                 .then(parsedQuery => parsedQuery.open.should.be.a('boolean'))
         });
     });
 
     describe('given "count" parameter as an string', function() {
         it('should convert to numeric', function () {
-            return validator.areValidParameters({count: '1'})
+            return validator.areValidParameters({count: '1'}, schema.paths['/projects'].get.parameters)
                             .then(parsedQuery => {
                                 parsedQuery.count.should.be.a('number');
                                 parsedQuery.count.should.not.be.a('string')
@@ -75,7 +75,7 @@ describe('given a request body', function() {
 
     describe('given additional parameter', function() {
         it('should fail validation', function() {
-            return validator.areValidParameters({loki: true})
+            return validator.areValidParameters({loki: true}, schema.paths['/projects'].get.parameters)
                      .then(() => Promise.reject)
                      .catch(() => Promise.resolve)
         });
