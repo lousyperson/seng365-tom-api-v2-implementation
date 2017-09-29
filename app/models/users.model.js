@@ -113,10 +113,29 @@ const authenticate = (username, email, password, done) => {
     )
 };
 
+
+/**
+ * check if logged in
+ *
+ * @param id
+ * @param done
+ */
+const isLoggedIn = (id, done) => {
+    db.get().query(
+        'SELECT token FROM users WHERE id=? AND deleted=false',
+        [id],
+        (err, results) => {
+            if (results.length === 1 && results[0].token)
+                return done(true);
+            return done(false);
+        }
+    )
+};
+
 /**
  * create and store a new token for a user
  *
- * @param username
+ * @param id
  * @param done
  */
 const setToken = (id, done) => {
@@ -171,6 +190,7 @@ module.exports = {
     alter: alter,
     remove: remove,
     authenticate: authenticate,
+    isLoggedIn: isLoggedIn,
     setToken: setToken,
     removeToken: removeToken,
     getIdFromToken: getIdFromToken
