@@ -138,7 +138,7 @@ describe('given a clean db', function() {
             })
         });
 
-        it('check successful auth by password', function (done) {
+        it('check successful auth by email', function (done) {
             users.authenticate('', 'loki@valhalla.biz', 'toki', (err, id) => {
                 err.should.be.false;
                 id.should.equal(user1Id);
@@ -156,6 +156,22 @@ describe('given a clean db', function() {
         it('check unsuccessful auth by email', function (done) {
             users.authenticate('', 'loki@valhalla.biz', 'loki', (err, id) => {
                 err.should.be.true;
+                return done()
+            })
+        });
+
+        it('check isLoggedIn=true when have token in db', function (done) {
+            users.setToken(1, () => {
+                users.isLoggedIn(1, loggedIn => {
+                    loggedIn.should.be.true;
+                    return done()
+                })
+            })
+        });
+
+        it('check isLoggedIn=false when do not have token in db', function (done) {
+            users.isLoggedIn(1, loggedIn => {
+                loggedIn.should.be.false;
                 return done()
             })
         });

@@ -113,9 +113,14 @@ const login = (req, res) => {
                 if (err)
                     res.status(400).send('Invalid username/email/password supplied');
                 else
-                    users.setToken(id, (err, token) => {
-                        res.status(200).json({id: id, token: token})
-                    });
+                    users.isLoggedIn(id, loggedIn => {
+                        // reject if already logged in
+                        if (loggedIn) return res.status(400).send('Already logged in');
+                        // but if not, complete login by creating a token for the user
+                        users.setToken(id, (err, token) => {
+                            res.status(200).json({id: id, token: token})
+                        });
+                    })
             })
         })
         .catch(() => res.sendStatus(400))
