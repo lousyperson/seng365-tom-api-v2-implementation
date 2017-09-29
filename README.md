@@ -1,6 +1,6 @@
 # Crowdfunding API v2 service implementation
 
-A reference implementation for the api specification in `config/swagger-api-v2.1.json`.
+A reference implementation for the api specification in `config/swagger-api-v2.1.4.json`.
 
 The code is based on the skeletons from labs 3 and 4, and so has a mix of callbacks and promises, with extensions to the lab framework mostly being promise-based.
 
