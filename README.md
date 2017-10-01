@@ -1,8 +1,37 @@
 # Crowdfunding API v2 service implementation
 
-A reference implementation for the api specification in `config/swagger-api-v2.1.4.json`.
+A reference implementation for the api specification in `config/swagger-api-v2.1.5.json`.
 
 The code is based on the skeletons from labs 3 and 4, and so has a mix of callbacks and promises, with extensions to the lab framework mostly being promise-based.
+
+## Version history
+
+### Version 2.1.5, 2 October 2017
+
+- API version now 2.1.5
+  - Corrected type of PUT /projects/:id/image to raw binary with content type of image/png or image/jpeg
+- Reject an attempt to login if already logged in
+
+### Version 2.1.4, 29 September 2017
+
+- Updated to v2.1.4 of the API
+  - Allow logins by either username or email
+- Now can validate any defined query parameters not just those for GET /projects
+- Fix issue where invalid query parameters to GET /projects would not send a response (res.status was used instead of res.sendStatus)
+  
+### Version 2.1.3, 27 September 2017
+
+- API version now 2.1.3
+  - Pledges now match user stories 2 and 5 in updated Assignment 2 briefing.
+  - The 'backers' section of the ProjectDetails now contains all pledges in time-order, with username given as anonymous for anonymous pledges
+  - The 'progress' section of the ProjectDetails contains the total of all pledges, and the number of unique userIds making pledges, where all anonymous backers are aggregated into one
+- Tightened up schema validation to reject unexpected properties and array elements
+- Added server-side CORS support for browsers
+- Fix to include both token and id in response to POST /users/login
+
+### Version 2.1.2, 
+
+- Updated to v2.1.2 of the API and some small tidy-ups
 
 ## Usage
 

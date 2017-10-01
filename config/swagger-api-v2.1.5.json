@@ -1,0 +1,952 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "",
+    "version": "2.1.5",
+    "title": "Crowdfunding API for SENG365"
+  },
+  "basePath": "/api/v2",
+  "tags": [
+    {
+      "name": "projects",
+      "description": "All project-related endpoints"
+    },
+    {
+      "name": "rewards",
+      "description": "Project rewards"
+    },
+    {
+      "name": "users",
+      "description": "Project creators, and backers"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/projects": {
+      "get": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "View all current projects. Will return all projects (up to some limit) in the absence of query parameters. Sort order is undefined, but is consistent between calls.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startIndex",
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of items to skip before returning result [optional]"
+          },
+          {
+            "in": "query",
+            "name": "count",
+            "type": "integer",
+            "minimum": 1,
+            "description": "Number of items to return [optional]"
+          },
+          {
+            "in": "query",
+            "name": "open",
+            "type": "boolean",
+            "description": "If true return only \"open\" projects, if false only \"closed\" projects [optional]"
+          },
+          {
+            "in": "query",
+            "name": "creator",
+            "type": "integer",
+            "minimum": 1,
+            "description": "Only return projects with this id as a creator [optional]"
+          },
+          {
+            "in": "query",
+            "name": "backer",
+            "type": "integer",
+            "minimum": 1,
+            "description": "Only return projects which have a pledge by this id [optional]"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ProjectsOverview"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "Create project",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ProjectCreation"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Project Id"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed project data"
+          },
+          "401": {
+            "description": "Unauthorized - create account to create project"
+          }
+        }
+      }
+    },
+    "/projects/{id}": {
+      "get": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "View project details",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "description": "Id of the project to view",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ProjectDetails"
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "Update project (open/close)",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "description": "Id of the project to update",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "open",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Malformed request"
+          },
+          "401": {
+            "description": "Unauthorized - create account to update project"
+          },
+          "403": {
+            "description": "Forbidden - unable to update a project you do not own OR Project cannot be reopened"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/projects/{id}/rewards": {
+      "get": {
+        "tags": [
+          "rewards"
+        ],
+        "summary": "View project rewards",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "description": "Project id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Rewards"
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "rewards"
+        ],
+        "summary": "Update project rewards",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "description": "Id of the project to update",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "rewards",
+            "description": "Array of project rewards",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RewardsCreation"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Malformed request"
+          },
+          "401": {
+            "description": "Unauthorized - create account to update project"
+          },
+          "403": {
+            "description": "Forbidden - unable to update a project you do not own"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/projects/{id}/image": {
+      "get": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "View project image",
+        "produces": [
+          "image/png",
+          "image/jpeg"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "description": "Id of the image",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "400": {
+            "description": "Malformed request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "Update project image",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "consumes": [
+          "image/png",
+          "image/jpeg"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "description": "Id of the project",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "image",
+            "description": "Binary image (e.g., content of png or jpeg image file).",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "format": "binary",
+              "description": "Note that Swagger 2.0 has difficulty with binary body examples"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Malformed request"
+          },
+          "401": {
+            "description": "Unauthorized - create account to update project"
+          },
+          "403": {
+            "description": "Forbidden - unable to update a project you do not own"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/projects/{id}/pledge": {
+      "post": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "Pledge an amount to a project",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "description": "Id of the project",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/Pledge"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad user, project, or pledge details"
+          },
+          "401": {
+            "description": "Unauthorized - create account to pledge to a project"
+          },
+          "403": {
+            "description": "Forbidden - cannot pledge to own project OR Project is closed to pledges"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create user",
+        "operationId": "createUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "User Id"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Logs user into the system. One of username and email is required",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "The user name for login",
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "The user email for login",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "The password for login in clear text",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LogInResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid username/email/password supplied"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Logs out user session given by auth token in header",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized - already logged out"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get user by user id (only if logged on as this user)",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PublicUser"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - account not owned"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update user",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "description": "Only if logged on as this user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "user id to be updated",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Malformed request"
+          },
+          "401": {
+            "description": "Unauthorized - not logged in"
+          },
+          "403": {
+            "description": "Forbidden - account not owned"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete user",
+        "security": [
+          {
+            "User": []
+          }
+        ],
+        "description": "This can only be done by the logged in user.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id to be deleted",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted"
+          },
+          "401": {
+            "description": "Unauthorized - not logged in"
+          },
+          "403": {
+            "description": "Forbidden - account not owned"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ProjectsOverview": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "subtitle",
+          "open"
+        ],
+        "description": "Used for the GET - projects/ endpoint. This contains a subset of the project data.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "open": {
+            "type": "boolean"
+          },
+          "imageUri": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ProjectDetails": {
+      "type": "object",
+      "description": "object containing project with dynamic content (backers, progress, rewards)",
+      "required": [
+        "id",
+        "creationDate",
+        "open",
+        "title",
+        "subtitle",
+        "description",
+        "creators",
+        "target"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "creationDate": {
+          "type": "integer",
+          "description": "number of milliseconds since January 1, 1970, 00:00:00 UTC"
+        },
+        "open": {
+          "type": "boolean"
+        },
+        "imageUri": {
+          "type": "string"
+        },
+        "target": {
+          "type": "integer",
+          "description": "target amount in cents"
+        },
+        "creators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "username"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "id field from User"
+              },
+              "username": {
+                "type": "string",
+                "description": "username field from User"
+              }
+            }
+          }
+        },
+        "rewards": {
+          "$ref": "#/definitions/Rewards"
+        },
+        "progress": {
+          "$ref": "#/definitions/Progress"
+        },
+        "backers": {
+          "type": "array",
+          "description": "all pledges to the project, ordered most recent first",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "username",
+              "amount"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "id of the user who has backed the project"
+              },
+              "username": {
+                "type": "string",
+                "description": "username of the backer, \"anonymous\" if pledge made anonymously"
+              },
+              "amount": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ProjectCreation": {
+      "type": "object",
+      "description": "object containing raw project data.",
+      "required": [
+        "title",
+        "subtitle",
+        "description",
+        "creators",
+        "target"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "target": {
+          "type": "integer",
+          "description": "target amount in cents"
+        },
+        "creators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "rewards": {
+          "$ref": "#/definitions/RewardsCreation"
+        }
+      }
+    },
+    "Progress": {
+      "type": "object",
+      "required": [
+        "currentPledged",
+        "numberOfBackers"
+      ],
+      "properties": {
+        "currentPledged": {
+          "description": "total of all pledges",
+          "type": "integer"
+        },
+        "numberOfBackers": {
+          "type": "integer",
+          "description": "number of unique non-anonymous backers, plus one if any pledge is anonymous"
+        }
+      }
+    },
+    "Rewards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "a project reward",
+        "required": [
+          "id",
+          "amount",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "id of the reward"
+          },
+          "amount": {
+            "type": "integer",
+            "description": "reward amount in cents"
+          },
+          "description": {
+            "type": "string",
+            "description": "reward description"
+          }
+        }
+      }
+    },
+    "RewardsCreation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "a project reward",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "description": "reward amount in cents"
+          },
+          "description": {
+            "type": "string",
+            "description": "reward description"
+          }
+        }
+      }
+    },
+    "Pledge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "id of the backer"
+        },
+        "amount": {
+          "type": "integer",
+          "description": "pledge amount in cents"
+        },
+        "anonymous": {
+          "type": "boolean",
+          "description": "hide the username"
+        },
+        "card": {
+          "$ref": "#/definitions/CreditCard"
+        }
+      }
+    },
+    "Status": {
+      "type": "object",
+      "required": [
+        "open"
+      ],
+      "properties": {
+        "open": {
+          "type": "boolean",
+          "description": "if the project is open to new pledges"
+        }
+      }
+    },
+    "CreditCard": {
+      "type": "object",
+      "required": [
+        "authToken"
+      ],
+      "properties": {
+        "authToken": {
+          "type": "string",
+          "description": "token"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "required": [
+        "username",
+        "email",
+        "password"
+      ],
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "LogInResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "the id of the logged in user"
+        },
+        "token": {
+          "type": "string",
+          "description": "a token to be used for future calls"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "User": {
+      "type": "apiKey",
+      "name": "X-Authorization",
+      "in": "header"
+    }
+  }
+}
