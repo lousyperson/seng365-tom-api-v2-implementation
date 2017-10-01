@@ -51,15 +51,21 @@ let
             },
             user: {
                 format: String,
-                default: 'root'
+                default: 'root',
+                arg: 'mysql-user',
+                env: 'SENG365_MYSQL_USER'
             },
             password: {
                 format: String,
-                default: 'secret'
+                default: 'secret',
+                arg: 'mysql-password',
+                env: 'SENG365_MYSQL_PASSWORD'
             },
             database: {
                 format: String,
-                default: 'mysql'
+                default: 'mysql',
+                arg: 'mysql-database',
+                env: 'SENG365_MYSQL_DATABASE'
             }
         }
     });
