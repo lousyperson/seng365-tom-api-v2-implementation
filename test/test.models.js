@@ -182,7 +182,6 @@ describe('given a clean db', function() {
                 id.should.equal(user1Id);
                 users.remove(user1Id, (err, results) => {
                     users.authenticate('loki', '', 'toki', (err, id) => {
-                        console.log(err);
                         err.should.be.true;
                         return done();
                     })
@@ -220,10 +219,10 @@ describe('given a clean db', function() {
         });
 
         it('get project', function (done) {
-
             projects.getOne(project1Id, (err, project) => {
+                console.log(project);
                 should.equal(err, null);
-                validator.isValidSchema(project, 'definitions.ProjectDetails');
+                validator.isValidSchema(project, 'definitions.ProjectDetails').should.equal(true);
                 project.id.should.equal(project1Id);
                 project.title.should.equal(project1.title);
                 project.subtitle.should.equal(project1.subtitle);
@@ -232,7 +231,10 @@ describe('given a clean db', function() {
                 project.creationDate.should.be.within(earliestDate, new Date(Date.now()).getTime());  // all times UTC
                 project.creators.should.have.lengthOf(1);
                 project.creators[0].id.should.equal(user1Id);
-                project.creators[0].username.should.equal('loki')
+                project.creators[0].username.should.equal('loki');
+                project.should.have.property("backers");
+                project.backers.should.have.lengthOf(0);
+                project.should.have.property("progress");
                 return done();
             })
         });

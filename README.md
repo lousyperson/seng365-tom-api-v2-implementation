@@ -1,11 +1,16 @@
 # Crowdfunding API v2 service implementation
 
-A reference implementation for the api specification in `config/swagger-api-v2.1.5.json`.
+A reference implementation for the api specification in `config/swagger-api-v2.1.6.json`.
 
 The code is based on the skeletons from labs 3 and 4, and so has a mix of callbacks and promises, with extensions to the lab framework mostly being promise-based.
 
 ## Version history
 
+### Version 2.1.6, 2 October 2017
+
+- API version now 2.1.6
+  - Always return backers and progress in GET /projects/:id. If no backers yet, then backers will be [] and progress.currentPledged and progress.numberOfBackers will both be 0.
+  
 ### Version 2.1.5, 2 October 2017
 
 - API version now 2.1.5

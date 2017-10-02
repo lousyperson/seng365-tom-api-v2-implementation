@@ -6,7 +6,7 @@
 
 const
     log = require('../lib/logger')(),
-    schema = require('../../config/swagger-api-v2.1.5.json'),
+    schema = require('../../config/swagger-api-v2.1.6.json'),
     config = require('../../config/config'),
     users = require('../models/users.model'),
     validator = require('../lib/validator');
