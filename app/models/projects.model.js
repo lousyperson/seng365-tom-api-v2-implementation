@@ -208,6 +208,7 @@ const insert = (project, done) => {
             if (err) return next(err);
             creatorsModel.insert(projectId, project.creators, err => {
                 if (err) return next(err);
+                if (!project.hasOwnProperty('rewards')) return next(null, projectId);
                 rewardsModel.insert(projectId, project.rewards, err => {
                     return next(err, projectId);
                 })
