@@ -36,6 +36,12 @@ let
             format: String,
             default: 'X-Authorization'
         },
+        sampledata: {
+            format: 'Boolean',
+            default: false,
+            arg: 'sampledata',
+            env: 'SAMPLE_DATA'
+        },
         db: {
             host: { // host, rather than hostname, as mysql connection string uses 'host'
                 format: String,

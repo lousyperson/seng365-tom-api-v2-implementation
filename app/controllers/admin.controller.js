@@ -9,11 +9,13 @@
 const
     log = require('../lib/logger')(),
     config = require('../../config/config'),
+    initData = require('../../config/sample.data'),
     initDb = require('../lib/db.init');
 
 const reset = (req, res) => {
     log.info('resetting db');
     return initDb(config.get('db'))
+        .then(() => initData(config))
         .then(() => res.sendStatus(201))
         .catch(() => res.sendStatus(500));
 };
