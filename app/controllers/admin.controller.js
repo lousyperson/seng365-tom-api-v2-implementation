@@ -9,7 +9,7 @@
 const
     log = require('../lib/logger')(),
     config = require('../../config/config'),
-    initData = require('../../config/sample.data'),
+    initData = require('../../config/sample.data.init'),
     initDb = require('../lib/db.init');
 
 const reset = (req, res) => {

@@ -6,6 +6,10 @@ The code is based on the skeletons from labs 3 and 4, and so has a mix of callba
 
 ## Version history
 
+### Version 2.1.8, 4 October 2017
+
+- Sample project data scraped from Kickstarter
+
 ### Version 2.1.7, 3 October 2017
 
 - Fix for issue where projects created without rewards would crash model

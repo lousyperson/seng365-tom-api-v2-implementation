@@ -8,7 +8,7 @@ const
     config = require('./config/config.js'),
     log = require('./app/lib/logger')({level: config.get('log.level')}),
     initDb = require('./app/lib/db.init'),
-    initData = require('./config/sample.data'),
+    initData = require('./config/sample.data.init'),
     initApp = require('./app/app'),
     port = config.get('port'),
     basepath = config.get('basepath');

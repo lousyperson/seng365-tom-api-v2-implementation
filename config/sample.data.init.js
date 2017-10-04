@@ -16,25 +16,11 @@ const
     db = require('../app/lib/db'),
     images = require('../app/models/images.model'),
     users = require('../app/models/users.model'),
-    projects = require('../app/models/projects.model');
+    projects = require('../app/models/projects.model'),
+    sampleData = require('./sample.data.');
 
 const
     sampleDataDirectory = './config/sample.data';
-
-let userIds = [];
-
-/**
- * method lifted from MDN for generating random integers in some range
- *
- * @param min
- * @param max
- * @returns {*}
- */
-const getRandomIntInclusive = (min, max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
-};
 
 /**
  * add a an image to a pre-existing project
@@ -93,45 +79,29 @@ const createProject = project => {
     })
 };
 
-let userData = [
-    {
-        username: 'loki',
-        email:'loki@valhalla.biz',
-        password:'toki'
-    }
-];
-
-let projectData = [
-    {
-        image: '640px-Bay_of_Noboto.jpg',
-        project: {
-            title: 'Bay of Noboto',
-            subtitle: 'A print by Katsushika Hokusai',
-            description: 'From the series Thirty-Six Views of Mount Fuji',
-            creators: [
-                {
-                    id: 1,
-                    name: 'loki'
-                }
-            ],
-            target: getRandomIntInclusive(5000, 10000)
-        }
-    },
-    {
-        image: '640px-Great_Wave_off_Kanagawa2.jpg',
-        project: {
-            title: 'Great Wave off Kanagawa',
-            subtitle: 'A print by Katsushika Hokusai',
-            description: 'From the series Thirty-Six Views of Mount Fuji',
-            creators: [
-                {
-                    id: 1,
-                    name: 'loki'
-                }
-            ],
-            target: getRandomIntInclusive(5000, 10000)
-        }
-    }];
+/**
+ * update the creation date for the project. This is set automatically by the db when a project is created,
+ * but as we don't want the sample projects to have dates within 20 seconds of each, we override the datetime here
+ *
+ * strictly would prefer not to include SQL in this method, so this might later be moved into the model
+ *
+ * @param projectId
+ * @param datetime
+ * @returns {Promise}
+ */
+const setCreationDateTime = (projectId, datetime) => {
+    log.info(`setting datetime for ${projectId} to ${datetime}`);
+    return new Promise((resolve, reject) => {
+        db.get().query(
+            'UPDATE projects SET ts=? WHERE id=?',
+            [datetime, projectId],
+            err => {
+                if (err) return reject(err);
+                resolve(projectId)
+            }
+        )
+    })
+};
 
 /**
  * insert sample data into the db. Construct a promise chain to do the work in an ordered way (users first, then projects and images)
@@ -149,11 +119,11 @@ module.exports = (config) => {
 
             if (config.get('sampledata')) {
                 log.info('creating sample data');
-                for(let user of userData) {
-                    p = p.then(()=>createUser(user)).then(userId => userIds.push(userId));
+                for(let user of sampleData.userData) {
+                    p = p.then(()=>createUser(user));
                 }
-                for(let project of projectData) {
-                    p = p.then(() => createProject(project.project)).then(projectId => addImage(projectId, project.image));
+                for(let project of sampleData.projectData) {
+                    p = p.then(() => createProject(project.project)).then(projectId => setCreationDateTime(projectId, project.datetime)).then(projectId => addImage(projectId, project.image));
                 }
             }
             return resolve(p);
