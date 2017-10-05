@@ -123,7 +123,7 @@ module.exports = (config) => {
                     p = p.then(()=>createUser(user));
                 }
                 for(let project of sampleData.projectData) {
-                    p = p.then(() => createProject(project.project)).then(projectId => setCreationDateTime(projectId, project.datetime)).then(projectId => addImage(projectId, project.image));
+                    p = p.then(() => createProject(project.project)).then(projectId => setCreationDateTime(projectId, project.datetime)); //.then(projectId => addImage(projectId, project.image));
                 }
             }
             return resolve(p);

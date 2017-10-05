@@ -14,7 +14,6 @@ exports.userData = [
 exports.projectData = [
     {
         datetime: '2017-09-27 14:02:01',
-        image: 'ab2ac31d1212bb9b8c7987279a751b0e_original.JPG',
         project: {
             title: 'Bamboo Renewal',
             subtitle: 'Designing a modern bamboo home in Haiti',
@@ -38,7 +37,6 @@ exports.projectData = [
     },
     {
         datetime: '2017-10-03 16:21:51',
-        image: 'a549050306c58b3a8006041f2e2be372_original.jpg',
         project: {
             title: 'Mine Kafon Drone',
             subtitle: 'Introducing the Mine Kafon Drone, an airborne demining system developed to clear all land mines around the world in less than 10 years',
@@ -60,7 +58,6 @@ exports.projectData = [
     },
     {
         datetime: '2017-09-10 18:27:11',
-        image: '4f76d6f1fec5b7a647379e7c3a77695f_original.JPG',
         project: {
             title: 'Let\'s Raise the Roof (Farm) !',
             subtitle: 'Higher Ground Farm will be building Boston\'s first commercial rooftop farm in Spring 2018.',
@@ -84,7 +81,6 @@ Higher Ground Farm wants to be your community farm and we are inviting you to he
     },
     {
         datetime: '2017-09-01 15:12:16',
-        image: '21c9b9fc132dee36da7b21277604612d_original.jpg',
         project: {
             title: 'The Farmery',
             subtitle: 'An innovative urban farm and market constructed from shipping containers.',
@@ -107,7 +103,6 @@ Higher Ground Farm wants to be your community farm and we are inviting you to he
     },
     {
         datetime: '2017-09-21 09:27:56',
-        image: '5153bd7b74e9294aad6603c56aa0d62e_original.jpg',
         project: {
             title: 'Floating Gardens in the Chicago River',
             subtitle: 'Planting and installing floating gardens in the Chicago River in May of 2018.',
@@ -135,7 +130,6 @@ Urban Rivers is a Chicago-based nonprofit and this our pilot project. Our plan i
     },
     {
         datetime: '2017-09-14 12:45:34',
-        image: 'cb3f91179ae5033793d6e471957c9b5b_original.jpg',
         project: {
             title: '(Art) AtWork',
             subtitle: 'Inspiring a new generation of thinkers in Africa with AtWork: a traveling artistic educational format from lettera27 and Simon Njami. ',
@@ -170,7 +164,6 @@ With AtWork we:
     },
     {
         datetime: '2017-10-01 14:54:57',
-        image: '3989752be3b4ac5303bd5a2999277d54_original.jpg',
         project: {
             title: 'LowLine: An Underground Park on NYC\'s Lower East Side',
             subtitle: 'We plan to transform an abandoned New York City trolley terminal into a vibrant community green space using new solar technology. ',
@@ -192,7 +185,6 @@ With AtWork we:
         }
     },{
         datetime: '2017-09-16 11:14:23',
-        image: 'f4d225f14152decb4635932fc288ebc7_original.jpg',
         project: {
             title: 'The \'Back to Rio\' project by Favela Painting',
             subtitle: 'It\'s our dream to paint an entire favela in Rio de Janeiro!',
@@ -213,7 +205,6 @@ With AtWork we:
         }
     },{
         datetime: '2017-10-02 06:14:45',
-        image: '589f78f9255c30ef71f4b25c394cf522_original.jpg',
         project: {
             title: 'THAMES BATHS LIDO - for swimming, for relaxing, for everyone',
             subtitle: 'THAMES BATHS LIDO is a new swimming and cultural destination for London on the River Thames using clean, filtered & heated Thames water',
@@ -247,7 +238,6 @@ The lido won't just be for swimmers, but it will also be an amazing cultural des
     },
     {
         datetime: '2017-09-23 21:17:42',
-        image: 'a9bc5c0b24b467e5c69e60bf261434e4_original.jpg',
         project: {
             title: 'Rainforest Connection - Phones Turned to Forest Guardians',
             subtitle: 'Technology to stop illegal logging and poaching on-the-spot. It\'s our answer to climate change & mass extinctions.',
@@ -270,7 +260,6 @@ It's the world's first scalable, real-time logging detection system, pinpointing
         }
     },{
         datetime: '2017-09-27 23:34:28',
-        image: '844affa6ac5894ca240598f82f510db1_original.png',
         project: {
             title: 'Aerostatic Bloomage',
             subtitle: 'Community art at a civic scale: urban design as art; art as urban design. Giant helium sculptures forming a dynamic floral sky-scape.',
@@ -293,7 +282,6 @@ Aerostatic Bloomage was conceived as an art project for Glasgow. However, we wou
         }
     },{
         datetime: '2017-10-02 22:10:01',
-        image: '0201736213d3b0d1b1a3face8731f65d_original.jpg',
         project: {
             title: 'Reboot the Suit: Bring Back Neil Armstrong’s Spacesuit ',
             subtitle: 'A community of backers around the world came together to help the Smithsonian conserve, digitize, and display Neil Armstrong\'s and Alan Shepard\'s spacesuits. ',
