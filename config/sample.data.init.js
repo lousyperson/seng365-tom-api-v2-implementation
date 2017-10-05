@@ -17,7 +17,7 @@ const
     images = require('../app/models/images.model'),
     users = require('../app/models/users.model'),
     projects = require('../app/models/projects.model'),
-    sampleData = require('./sample.data.');
+    sampleData = require('./sample.data');
 
 const
     sampleDataDirectory = './config/sample.data';
