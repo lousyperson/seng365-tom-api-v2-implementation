@@ -13,6 +13,7 @@
 const
     chai = require('chai'),
     should = chai.should(),
+    expect = chai.expect,
     config = require('../config/config.js'),
     log = require('../app/lib/logger')({level: config.get('log.level')}),
     projects = require('../app/models/projects.model'),
@@ -160,18 +161,19 @@ describe('given a clean db', function() {
             })
         });
 
-        it('check isLoggedIn=true when have token in db', function (done) {
-            users.setToken(1, () => {
-                users.isLoggedIn(1, loggedIn => {
-                    loggedIn.should.be.true;
+        it('check get token when have token in db', function (done) {
+            users.setToken(1, (err, token) => {
+                users.getToken(1, (err, _token) => {
+                    _token.should.equal(token);
                     return done()
                 })
             })
         });
 
         it('check isLoggedIn=false when do not have token in db', function (done) {
-            users.isLoggedIn(1, loggedIn => {
-                loggedIn.should.be.false;
+            users.getToken(1, (err, token) => {
+                expect(err).to.be.null;
+                expect(token).to.be.null;
                 return done()
             })
         });
