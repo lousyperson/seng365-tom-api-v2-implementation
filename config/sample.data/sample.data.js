@@ -13,6 +13,8 @@ exports.userData = [
 
 exports.projectData = [
     {
+        image:'640px-Bamboo_home.jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:Bamboo_home.jpg',
         datetime: '2017-09-27 14:02:01',
         project: {
             title: 'Bamboo Renewal',
@@ -36,6 +38,8 @@ exports.projectData = [
         }
     },
     {
+        image:'416px-Class1Soldiers2.jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:Class1Soldiers2.jpg',
         datetime: '2017-10-03 16:21:51',
         project: {
             title: 'Mine Kafon Drone',
@@ -57,6 +61,8 @@ exports.projectData = [
         }
     },
     {
+        image:'Lufa_Farms_Aerial_view_of_Montreal_rooftop_greenhouse.jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:Lufa_Farms_Aerial_view_of_Montreal_rooftop_greenhouse.jpg',
         datetime: '2017-09-10 18:27:11',
         project: {
             title: 'Let\'s Raise the Roof (Farm) !',
@@ -80,6 +86,8 @@ Higher Ground Farm wants to be your community farm and we are inviting you to he
         }
     },
     {
+        image:'Urban_Vertical_Farm_With_Woman_&_Child.jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:Urban_Vertical_Farm_With_Woman_%26_Child.jpg',
         datetime: '2017-09-01 15:12:16',
         project: {
             title: 'The Farmery',
@@ -102,6 +110,8 @@ Higher Ground Farm wants to be your community farm and we are inviting you to he
         }
     },
     {
+        image: '640px-Vienna_-_A_floating_swimming_pool_in_the_river_Danube_-_4476.jpg',
+        imagerights: 'https://commons.wikimedia.org/wiki/File:Vienna_-_A_floating_swimming_pool_in_the_river_Danube_-_4476.jpg',
         datetime: '2017-09-21 09:27:56',
         project: {
             title: 'Floating Gardens in the Chicago River',
@@ -129,6 +139,8 @@ Urban Rivers is a Chicago-based nonprofit and this our pilot project. Our plan i
         }
     },
     {
+        image:'640px-Yassine_balbzioui.jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:Yassine_balbzioui.jpg',
         datetime: '2017-09-14 12:45:34',
         project: {
             title: '(Art) AtWork',
@@ -163,6 +175,8 @@ With AtWork we:
         }
     },
     {
+        image: 'Forestiere_Underground_Gardens_at_5021_West_Shaw_Avenue,_Fresno,_California_LCCN2013635153.tif.jpg',
+        imagerights: 'https://commons.wikimedia.org/wiki/File:Forestiere_Underground_Gardens_at_5021_West_Shaw_Avenue,_Fresno,_California_LCCN2013635153.tif',
         datetime: '2017-10-01 14:54:57',
         project: {
             title: 'LowLine: An Underground Park on NYC\'s Lower East Side',
@@ -184,6 +198,8 @@ With AtWork we:
             ]
         }
     },{
+        image:'Favela_en_Rio_-_panoramio.jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:Favela_en_Rio_-_panoramio.jpg',
         datetime: '2017-09-16 11:14:23',
         project: {
             title: 'The \'Back to Rio\' project by Favela Painting',
@@ -203,7 +219,10 @@ With AtWork we:
                 { amount: 9500, description: 'BOY WITH KITE - KITE - Custom made Favela Painting kite, built by the infamous Vila Cruzeiro kite maker Jorge \'Chileno\' Lopes, printed with the design of Boy with Kite. (String included) (includes membership)'},
             ]
         }
-    },{
+    },
+    {
+        image: '401px-Vienna_-_A_floating_swimming_pool_in_the_river_Danube_-_6124.jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:Vienna_-_A_floating_swimming_pool_in_the_river_Danube_-_6124.jpg',
         datetime: '2017-10-02 06:14:45',
         project: {
             title: 'THAMES BATHS LIDO - for swimming, for relaxing, for everyone',
@@ -237,6 +256,8 @@ The lido won't just be for swimmers, but it will also be an amazing cultural des
         }
     },
     {
+        image:'South_American_jungle_photograph.jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:South_American_jungle_photograph.jpg',
         datetime: '2017-09-23 21:17:42',
         project: {
             title: 'Rainforest Connection - Phones Turned to Forest Guardians',
@@ -258,7 +279,10 @@ It's the world's first scalable, real-time logging detection system, pinpointing
 
             ]
         }
-    },{
+    },
+    {
+        image:'398px-Alien_Balloon_Party_(3715267974).jpg',
+        imagerights:'https://commons.wikimedia.org/wiki/File:Alien_Balloon_Party_(3715267974).jpg',
         datetime: '2017-09-27 23:34:28',
         project: {
             title: 'Aerostatic Bloomage',
@@ -280,7 +304,10 @@ Aerostatic Bloomage was conceived as an art project for Glasgow. However, we wou
 
             ]
         }
-    },{
+    },
+    {
+        image: 'Neil-Armstrong-Apollo-11-spacesuit-chest.jpg',
+        imagerights: 'https://commons.wikimedia.org/wiki/File:Neil-Armstrong-Apollo-11-spacesuit-chest.jpg',
         datetime: '2017-10-02 22:10:01',
         project: {
             title: 'Reboot the Suit: Bring Back Neil Armstrong’s Spacesuit ',

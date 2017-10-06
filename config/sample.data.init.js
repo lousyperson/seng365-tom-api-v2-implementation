@@ -17,7 +17,7 @@ const
     images = require('../app/models/images.model'),
     users = require('../app/models/users.model'),
     projects = require('../app/models/projects.model'),
-    sampleData = require('./sample.data');
+    sampleData = require('./sample.data/sample.data');
 
 const
     sampleDataDirectory = './config/sample.data';
@@ -123,7 +123,7 @@ module.exports = (config) => {
                     p = p.then(()=>createUser(user));
                 }
                 for(let project of sampleData.projectData) {
-                    p = p.then(() => createProject(project.project)).then(projectId => setCreationDateTime(projectId, project.datetime)); //.then(projectId => addImage(projectId, project.image));
+                    p = p.then(() => createProject(project.project)).then(projectId => setCreationDateTime(projectId, project.datetime)).then(projectId => addImage(projectId, project.image));
                 }
             }
             return resolve(p);

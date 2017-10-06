@@ -6,6 +6,10 @@ The code is based on the skeletons from labs 3 and 4, and so has a mix of callba
 
 ## Version history
 
+### Version 2.1.9, 6 October 2017
+
+- Sample images from Wikimedia Commons, under various Creative Commons licenses (see sample.data.js)
+
 ### Version 2.1.8, 4 October 2017
 
 - Sample project data scraped from Kickstarter
@@ -78,8 +82,17 @@ and start the service with `node server.js --env=production`:
 }
 ```
 
-### Tests
+## Sample data
+
+Sample data can be included by setting the config variable `sampledata` to `true` (default is `false`) before starting the service. Once sample data is enabled, 
+`POST /admin/reset` will also re-add the sample data after the database is reset.
+ 
+Projects are based on a manual scraping of selected Public Good projects from Kickstarter, edited for length.
+Project images have been sourced from Wikimedia Commons, under Creative Commons. Licensing information is included for each image in the 'imagelicense' in sample.data.js.
+
+## Tests
 
 Some simple unit tests can be run through `npm test`. They assume that a database is already running on the defined config.
 
 The full API can be tested by starting this service with `npm start` and then running the tests from the `api-v2-test` repo.
+
