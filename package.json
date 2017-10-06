@@ -1,6 +1,6 @@
 {
   "name": "crowdfunding",
-  "version": "2.1.7",
+  "version": "2.1.9",
   "repository": {
     "type": "git",
     "url": "https://eng-git.canterbury.ac.nz/seng365-2017/api-v2-implementation.git"

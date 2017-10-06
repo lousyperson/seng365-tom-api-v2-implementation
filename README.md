@@ -8,6 +8,7 @@ The code is based on the skeletons from labs 3 and 4, and so has a mix of callba
 
 ### Version 2.1.9, 6 October 2017
 
+- Changed API response when login again with same credentials without logging out so now just return 200 and an unchanged token
 - Sample images from Wikimedia Commons, under various Creative Commons licenses (see sample.data.js)
 
 ### Version 2.1.8, 4 October 2017
