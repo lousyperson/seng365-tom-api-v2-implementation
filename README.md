@@ -6,6 +6,12 @@ The code is based on the skeletons from labs 3 and 4, and so has a mix of callba
 
 ## Version history
 
+### Version 2.1.10, 7 October 2017
+
+- New config parameter `cleanstart`. If `true` (default, for compatibility with earlier behaviour) then remove any existing data and recreate the db schema on startup. If `false`, then do this only if it does not already exist.
+- Sample data will only be added if `sampledata` is `true` and if the db schema has been recreated, irregardless of the value of `cleanstart` (so won't add duplicate data)
+- POST /admin/reset will always reset the db schema, and will add sample data if `sampledata` is `true`
+
 ### Version 2.1.9, 6 October 2017
 
 - Changed API response when login again with same credentials without logging out so now just return 200 and an unchanged token

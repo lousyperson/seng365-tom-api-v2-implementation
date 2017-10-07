@@ -1,10 +1,3 @@
-DROP TABLE IF EXISTS images;
-DROP TABLE IF EXISTS creators;
-DROP TABLE IF EXISTS pledges;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS rewards;
-DROP TABLE IF EXISTS projects;
-
 CREATE TABLE projects (
             id INT AUTO_INCREMENT,
             title VARCHAR(256) NOT NULL,

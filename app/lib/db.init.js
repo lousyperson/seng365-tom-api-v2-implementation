@@ -11,6 +11,7 @@ const
     mysql = require('mysql');
 
 const
+    initFilename = path.join(__dirname, '../../config/db.init.sql'),
     schemaFilename = path.join(__dirname, '../../config/db.schema.sql');
 
 function rejectDelay(reason) {
@@ -21,26 +22,34 @@ function rejectDelay(reason) {
 }
 
 /**
- * create schema in the database given by the config object. if the database is not a mysql built-in, use it instead
- * of mysql.
+ * create schema in the database given by the config object.
  *
- * @param config   mysql database configuration object with properties for host, port, user, password and database
+ * if `cleanstart` is set in config then first drop all tables then create schema; otherwise create schema only if missing
+ *
+ * @param config
+ * @param force
+ * @param sql
  * @returns {Promise}
  */
-function initialiseDB(config) {
+function initialiseDB(config, force, sql) {
     return new Promise((resolve, reject) => {
 
-        let schema = fs.readFileSync(schemaFilename, 'utf8');
+        const TABLE_EXISTS_ERRNO = 1050;
         let options = Object.assign({multipleStatements: true}, config);
 
         let connection = mysql.createConnection(options);
+        connection.query(sql, err => {
 
-        connection.query(schema, (err, results) => {
-            if (err) return reject(err);
-            log.info(`schema created from ${schemaFilename}`);
-            connection.end(err => {
+            connection.end(_err => {
+                if (_err) return reject(_err); // safety first - if can't close connection cleanly then try again
+                if (!force) {
+                    if (!err) return resolve(true); // we've created the schema
+                    if (err && err.errno!==TABLE_EXISTS_ERRNO) return reject(err); // an error, and it wasn't because the tables were already there
+                    return resolve(false); // the tables were already there, so we didn't do anything
+                }
                 if (err) return reject(err);
-                return resolve(results)
+                log.info(`schema created from ${schemaFilename}`);
+                return resolve(true)
             });
 
         })
@@ -54,18 +63,21 @@ function initialiseDB(config) {
  * if the config is undedefined or null then Reject. The Retry code is based on the first pattern in https://stackoverflow.com/questions/38213668/promise-retry-design-patterns
  * for a recursive approach to retries, see the initApp() code in the api-test repo.
  *
- * @param config    mysql database configuration object with properties for host, port, user, password and database
+ * @param dbConfig  mysql database configuration object with properties for host, port, user, password and database
+ * @param force   if the db schema should be recreated
  * @returns {Promise}
  */
-module.exports = config => {
-    if (!config) {
-        return Promise.reject('No config');
-    } else {
-        log.info(`initialising db with ${JSON.stringify(config)}`);
-        let p = initialiseDB(config);
-        for (let i = 0; i < 10; i++) {
-            p = p.catch(() => initialiseDB(config)).catch(rejectDelay);
-        }
-        return p;
+module.exports = (dbConfig, force) => {
+    let sql='';
+    if (force) {
+        sql = fs.readFileSync(initFilename, 'utf8');
+        log.info('resetting db')
     }
-};
+    sql += fs.readFileSync(schemaFilename, 'utf8');
+
+    let p = initialiseDB(dbConfig, force, sql);
+    for (let i = 0; i < 10; i++) {
+        p = p.catch(() => initialiseDB(dbConfig, force, sql)).catch(rejectDelay);
+    }
+    return p;
+}

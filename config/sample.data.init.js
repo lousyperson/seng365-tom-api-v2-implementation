@@ -106,26 +106,25 @@ const setCreationDateTime = (projectId, datetime) => {
 /**
  * insert sample data into the db. Construct a promise chain to do the work in an ordered way (users first, then projects and images)
  *
- * @param config
+ * @param dbConfig   mysql database configuration object with properties for host, port, user, password and database
  * @returns {Promise}
  */
-module.exports = (config) => {
+module.exports = dbConfig => {
+
     return new Promise((resolve, reject) => {
-        db.connect(config.get('db'), err => {
+        db.connect(dbConfig, err => {
             if (err) return reject(err);
             let p = Promise.resolve();
 
-            // only add sample data if requested to do so
-
-            if (config.get('sampledata')) {
-                log.info('creating sample data');
-                for(let user of sampleData.userData) {
-                    p = p.then(()=>createUser(user));
-                }
-                for(let project of sampleData.projectData) {
-                    p = p.then(() => createProject(project.project)).then(projectId => setCreationDateTime(projectId, project.datetime)).then(projectId => addImage(projectId, project.image));
-                }
+            log.info('creating sample data');
+            for(let user of sampleData.userData) {
+                p = p.then(()=>createUser(user));
             }
+
+            for(let project of sampleData.projectData) {
+                p = p.then(() => createProject(project.project)).then(projectId => setCreationDateTime(projectId, project.datetime)).then(projectId => addImage(projectId, project.image));
+            }
+
             return resolve(p);
         })
     })

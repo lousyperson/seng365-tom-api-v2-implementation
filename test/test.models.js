@@ -103,7 +103,7 @@ describe('given a clean db', function() {
     this.timeout(5000);
     
     beforeEach(`clean db`, function() {
-        return initDb(config.get('db'))
+        return initDb(config.get('db'), true)
             .catch(err => {
                 console.log(err);
                 process.exit(1);
@@ -222,7 +222,6 @@ describe('given a clean db', function() {
 
         it('get project', function (done) {
             projects.getOne(project1Id, (err, project) => {
-                console.log(project);
                 should.equal(err, null);
                 validator.isValidSchema(project, 'definitions.ProjectDetails').should.equal(true);
                 project.id.should.equal(project1Id);

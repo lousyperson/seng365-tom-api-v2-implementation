@@ -36,6 +36,12 @@ let
             format: String,
             default: 'X-Authorization'
         },
+        cleanstart: {
+            format: 'Boolean',
+            default: true,
+            arg: 'cleanstart',
+            env: 'CLEAN_START'
+        },
         sampledata: {
             format: 'Boolean',
             default: false,

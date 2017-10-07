@@ -13,8 +13,10 @@ const
     port = config.get('port'),
     basepath = config.get('basepath');
 
-initDb(config.get('db'))
-    .then(() => initData(config))
+initDb(config.get('db'), config.get('cleanstart'))
+    .then(haveCleanDB => {
+        if (haveCleanDB && config.get('sampledata')) return initData(config.get('db'))
+    })
     .then(() => initApp(config))
     .then(app => app.listen(port, () => log.info(`listening on localhost:${port}${basepath}`)))
     .catch(err => log.fatal(`could not start app: ${err}`));
