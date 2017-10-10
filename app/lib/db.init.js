@@ -68,6 +68,7 @@ function initialiseDB(config, force, sql) {
  * @returns {Promise}
  */
 module.exports = (dbConfig, force) => {
+    log.info(`using db config of ${JSON.stringify(dbConfig)}`);
     let sql='';
     if (force) {
         sql = fs.readFileSync(initFilename, 'utf8');
