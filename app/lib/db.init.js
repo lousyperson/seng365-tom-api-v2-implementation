@@ -72,7 +72,7 @@ module.exports = (dbConfig, force) => {
     let sql='';
     if (force) {
         sql = fs.readFileSync(initFilename, 'utf8');
-        log.info(`resetting db on ${JSON.stringify(dbConfig)}`)
+        log.info('resetting db')
     }
     sql += fs.readFileSync(schemaFilename, 'utf8');
 

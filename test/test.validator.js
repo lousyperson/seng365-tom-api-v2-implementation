@@ -11,7 +11,7 @@ const
     chai = require('chai'),
     should = chai.should(),
     expect = chai.expect,
-    schema = require('../config/swagger-api-v2.1.5.json'),
+    schema = require('../config/swagger-api-v2.1.6.json'),
     validator = require('../app/lib/validator');
 
 

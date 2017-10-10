@@ -44,14 +44,14 @@ let
         },
         sampledata: {
             format: 'Boolean',
-            default: true,
+            default: false,
             arg: 'sampledata',
             env: 'SAMPLE_DATA'
         },
         db: {
             host: { // host, rather than hostname, as mysql connection string uses 'host'
                 format: String,
-                default: 'csse-s365',
+                default: 'localhost',
                 arg: 'mysql-host',
                 env: 'SENG365_MYSQL_HOST'
             },
@@ -63,19 +63,19 @@ let
             },
             user: {
                 format: String,
-                default: 'seng365-1',
+                default: 'root',
                 arg: 'mysql-user',
                 env: 'SENG365_MYSQL_USER'
             },
             password: {
                 format: String,
-                default: 'LiftedPeroxide5906-1',
+                default: 'secret',
                 arg: 'mysql-password',
                 env: 'SENG365_MYSQL_PASSWORD'
             },
             database: {
                 format: String,
-                default: 'seng365-1',
+                default: 'mysql',
                 arg: 'mysql-database',
                 env: 'SENG365_MYSQL_DATABASE'
             }

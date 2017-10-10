@@ -13,6 +13,7 @@
 const
     chai = require('chai'),
     should = chai.should(),
+    expect = chai.expect,
     config = require('../config/config.js'),
     log = require('../app/lib/logger')({level: config.get('log.level')}),
     projects = require('../app/models/projects.model'),
@@ -102,7 +103,7 @@ describe('given a clean db', function() {
     this.timeout(5000);
     
     beforeEach(`clean db`, function() {
-        return initDb(config.get('db'))
+        return initDb(config.get('db'), true)
             .catch(err => {
                 console.log(err);
                 process.exit(1);
@@ -160,18 +161,19 @@ describe('given a clean db', function() {
             })
         });
 
-        it('check isLoggedIn=true when have token in db', function (done) {
-            users.setToken(1, () => {
-                users.isLoggedIn(1, loggedIn => {
-                    loggedIn.should.be.true;
+        it('check get token when have token in db', function (done) {
+            users.setToken(1, (err, token) => {
+                users.getToken(1, (err, _token) => {
+                    _token.should.equal(token);
                     return done()
                 })
             })
         });
 
         it('check isLoggedIn=false when do not have token in db', function (done) {
-            users.isLoggedIn(1, loggedIn => {
-                loggedIn.should.be.false;
+            users.getToken(1, (err, token) => {
+                expect(err).to.be.null;
+                expect(token).to.be.null;
                 return done()
             })
         });
@@ -182,7 +184,6 @@ describe('given a clean db', function() {
                 id.should.equal(user1Id);
                 users.remove(user1Id, (err, results) => {
                     users.authenticate('loki', '', 'toki', (err, id) => {
-                        console.log(err);
                         err.should.be.true;
                         return done();
                     })
@@ -220,10 +221,9 @@ describe('given a clean db', function() {
         });
 
         it('get project', function (done) {
-
             projects.getOne(project1Id, (err, project) => {
                 should.equal(err, null);
-                validator.isValidSchema(project, 'definitions.ProjectDetails');
+                validator.isValidSchema(project, 'definitions.ProjectDetails').should.equal(true);
                 project.id.should.equal(project1Id);
                 project.title.should.equal(project1.title);
                 project.subtitle.should.equal(project1.subtitle);
@@ -232,7 +232,10 @@ describe('given a clean db', function() {
                 project.creationDate.should.be.within(earliestDate, new Date(Date.now()).getTime());  // all times UTC
                 project.creators.should.have.lengthOf(1);
                 project.creators[0].id.should.equal(user1Id);
-                project.creators[0].username.should.equal('loki')
+                project.creators[0].username.should.equal('loki');
+                project.should.have.property("backers");
+                project.backers.should.have.lengthOf(0);
+                project.should.have.property("progress");
                 return done();
             })
         });

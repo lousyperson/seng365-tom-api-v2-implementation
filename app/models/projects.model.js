@@ -131,7 +131,8 @@ const getOne = (projectId, done) => {
         return new Promise((resolve, reject) => {
             pledgesModel.getTotals(projectId, (err, totals) => {
                 if (err) return reject(err);
-                if (!totals) return resolve(null);
+                // respond with zeros if nothing yet pledged
+                if (!totals) totals = {currentPledged: 0, numberOfBackers: 0};
                 resolve({currentPledged: totals.currentPledged, numberOfBackers: totals.numberOfBackers})
             })
         })
@@ -152,7 +153,7 @@ const getOne = (projectId, done) => {
                     },
                     (err, backers) => {
                         if (err) return reject(err);
-                        resolve(backers); // will resolve as null if no backers
+                        resolve(backers); // will resolve as empty array if no backers
                     })
             })
         })
@@ -169,9 +170,8 @@ const getOne = (projectId, done) => {
             projectDetails.id = projectId;
             projectDetails.creators = results[1];
             projectDetails.rewards = results[2];
-            // optional elements
-            if (results[3]) projectDetails.progress = results[3];
-            if (results[4]) projectDetails.backers = results[4];
+            projectDetails.progress = results[3];
+            projectDetails.backers = results[4];
 
             if (projectDetails.hasImage) projectDetails.imageUri = `/projects/${projectId}/image`;
             delete projectDetails.hasImage;
@@ -208,6 +208,7 @@ const insert = (project, done) => {
             if (err) return next(err);
             creatorsModel.insert(projectId, project.creators, err => {
                 if (err) return next(err);
+                if (!project.hasOwnProperty('rewards')) return next(null, projectId);
                 rewardsModel.insert(projectId, project.rewards, err => {
                     return next(err, projectId);
                 })
