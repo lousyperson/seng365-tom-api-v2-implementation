@@ -36,10 +36,22 @@ let
             format: String,
             default: 'X-Authorization'
         },
+        cleanstart: {
+            format: 'Boolean',
+            default: true,
+            arg: 'cleanstart',
+            env: 'CLEAN_START'
+        },
+        sampledata: {
+            format: 'Boolean',
+            default: true,
+            arg: 'sampledata',
+            env: 'SAMPLE_DATA'
+        },
         db: {
             host: { // host, rather than hostname, as mysql connection string uses 'host'
                 format: String,
-                default: 'localhost',
+                default: 'csse-s365',
                 arg: 'mysql-host',
                 env: 'SENG365_MYSQL_HOST'
             },
@@ -51,19 +63,19 @@ let
             },
             user: {
                 format: String,
-                default: 'root',
+                default: 'seng365-1',
                 arg: 'mysql-user',
                 env: 'SENG365_MYSQL_USER'
             },
             password: {
                 format: String,
-                default: 'secret',
+                default: 'LiftedPeroxide5906-1',
                 arg: 'mysql-password',
                 env: 'SENG365_MYSQL_PASSWORD'
             },
             database: {
                 format: String,
-                default: 'mysql',
+                default: 'seng365-1',
                 arg: 'mysql-database',
                 env: 'SENG365_MYSQL_DATABASE'
             }

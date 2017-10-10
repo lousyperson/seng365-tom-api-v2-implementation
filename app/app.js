@@ -30,6 +30,8 @@ module.exports = config => {
                 log.fatal(`unable to connect to Database using ${JSON.stringify(config)}`);
                 reject(err);
             } else {
+                app.use(cors()); // CORS-enabled for all requests
+                app.options('*', cors()); // enable pre-flight for other HTTP verbs, principally in our case DELETE and PUT
 
                 // log the url of all requests
                 app.use((req, res, next) => {
