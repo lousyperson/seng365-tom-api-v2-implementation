@@ -101,7 +101,7 @@ const pledgeToProject = (projectId, userId) => {
 
 describe('given a clean db', function() {
     this.timeout(5000);
-    
+
     beforeEach(`clean db`, function() {
         return initDb(config.get('db'), true)
             .catch(err => {
@@ -120,12 +120,12 @@ describe('given a clean db', function() {
     describe('With a single user', function(done) {
 
         let user1Id;
-        
+
         beforeEach(`create user`, function() {
             return createUser({username: 'loki', email:'loki@valhalla.biz', password:'toki'})
                 .then(_id => user1Id = _id)
         });
-        
+
         it('insert project', function () {
             return createProject(projectTemplate('loki', user1Id))
                 .then(id => id.should.equal(1))
@@ -386,7 +386,7 @@ describe('given a clean db', function() {
 
     });
 
-    describe('With a two users each with one project, each pledging to the other project', function(done) {
+    describe('With two users each with one project, each pledging to the other project', function(done) {
 
         let user1Id, user2Id, project1Id, project2Id;
 
@@ -424,4 +424,34 @@ describe('given a clean db', function() {
         });
 
     });
+
+    describe('With two users and two projects, owned by one user', function(done) {
+
+        let user1Id, user2Id, project1Id, project2Id;
+
+        beforeEach('Create project', function() {
+            return createUser({username: 'loki', email:'loki@valhalla.biz', password:'toki'})
+                .then(_id => user1Id = _id)
+                .then(() => createUser({username: 'toki', email:'toki@valhalla.biz', password:'loki'}))
+                .then(_id => user2Id = _id)
+                .then(() => createProject(projectTemplate('loki', user1Id))) // user1 creates project1
+                .then(_id => project1Id = _id)
+                .then(() => createProject(projectTemplate('loki', user1Id))) // user2 creates project2
+                .then(_id => project2Id = _id)
+                .then(() => pledgeToProject(project1Id, user2Id))  // user2 pledges to project1
+                .then(() => pledgeToProject(project1Id, user2Id))  // user2 pledges to project1 again
+        });
+
+        it('get projects with backer=2 (toki) should return just project1', function (done) {
+            projects.getAll({backer: user2Id}, (err, results) => {
+                should.equal(err, null);
+                results.should.have.lengthOf(1);
+                validator.isValidSchema(results, 'definitions.ProjectsOverview').should.be.true;
+                results[0].id.should.equal(project1Id);
+                return done();
+            })
+        });
+
+    });
+
 });
