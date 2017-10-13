@@ -240,6 +240,31 @@ describe('given a clean db', function() {
             })
         });
 
+        it('add image', function (done) {
+            images.update(project1Id, {image: Buffer([1,2,3,4]), type:'image/png'}, (err, results) => {
+                should.equal(err, null);
+                images.get(project1Id, (err, results) => {
+                    should.equal(err, null);
+                    should.equal(Buffer([1,2,3,4]).toString(), results.image.toString());  // hacky way to compare buffers
+                    return done();
+                })
+            })
+        });
+
+        it('update image', function (done) {
+            images.update(project1Id, {image: Buffer([1,2,3,4]), type:'image/png'}, (err, results) => {
+                should.equal(err, null);
+                images.update(project1Id, {image:Buffer([5,6,7,8]), type:'image/png'}, (err, results) => {
+                    should.equal(err, null);
+                    images.get(project1Id, (err, results) => {
+                        should.equal(err, null);
+                        should.equal(Buffer([5,6,7,8]).toString(), results.image.toString());  // hacky way to compare buffers
+                        return done();
+                    })
+                })
+            })
+        });
+
         it('get undefined project', function (done) {
             projects.getOne(123, (err, results) => {
                 should.equal(err, null);
