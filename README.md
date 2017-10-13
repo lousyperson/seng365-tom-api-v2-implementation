@@ -6,6 +6,12 @@ The code is based on the skeletons from labs 3 and 4, and so has a mix of callba
 
 ## Version history
 
+### Version 2.1.11, 13 October 2017
+
+- Fixed issue where GET /projects?backer=:id returned duplicate copies of a project, one for each pledge by backer to the project
+- Fix for when POST /projects with rewards=[] - should now correctly ignore rather than return 500 internal server error
+- Added tests for adding and updating images
+
 ### Version 2.1.10, 7 October 2017
 
 - New config parameter `cleanstart`. If `true` (default, for compatibility with earlier behaviour) then remove any existing data and recreate the db schema on startup. If `false`, then do this only if it does not already exist.

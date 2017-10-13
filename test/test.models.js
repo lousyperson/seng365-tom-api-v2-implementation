@@ -131,6 +131,13 @@ describe('given a clean db', function() {
                 .then(id => id.should.equal(1))
         });
 
+        it('insert project with empty rewards', function () {
+            let project = projectTemplate('loki', user1Id);
+            project.rewards = [];
+            return createProject(project)
+                .then(id => id.should.equal(1))
+        });
+
         it('check successful auth by username', function (done) {
             users.authenticate('loki', '', 'toki', (err, id) => {
                 err.should.be.false;
