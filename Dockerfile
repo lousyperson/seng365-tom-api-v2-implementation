@@ -12,4 +12,6 @@ RUN npm install
 COPY . /usr/src/app
 
 EXPOSE 4941
+HEALTHCHECK --interval=2m --timeout=5s CMD curl -f http://localhost:4941/api/v2/projects || exit 1
+
 CMD [ "npm", "start" ]

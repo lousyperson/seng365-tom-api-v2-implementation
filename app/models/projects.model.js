@@ -52,7 +52,7 @@ const getAll = (options, done) => {
     if (whereConditions.length > 0) whereCondition = ' WHERE ' + whereConditions.join(' AND ');
 
     // finalise SQL
-    let sql = `SELECT pr.id, pr.title, pr.subtitle, pr.open, exists(select 1 from images where images.projectid=2) as hasImage
+    let sql = `SELECT DISTINCT pr.id, pr.title, pr.subtitle, pr.open, exists(select 1 from images where images.projectid=2) as hasImage, pr.ts
      FROM projects pr ${joinTables}${joinCondition}${whereCondition}
      ORDER BY pr.ts DESC LIMIT ? OFFSET ?`;
     log.debug(sql, [options.count, options.startIndex]);
@@ -63,13 +63,15 @@ const getAll = (options, done) => {
             if (err) return done(err);
             if (!projects) return done(err, null);
 
-            // if image exists, then set imageUri correctly
+            // adjust some of the db fields to the right format
             projects.map(project => {
+                // if image exists, then set imageUri correctly
                 if (project.hasImage) project.imageUri = `/projects/${project.id}/image`;
                 delete project.hasImage;
+                delete project.ts; // remove unneeded ts value
+                project.open = Boolean(project.open); // munge mysql int boolean to proper boolean
                 return project
             });
-            projects.map(project => project.open = Boolean(project.open)); // munge mysql int boolean to proper boolean
             return done(err, projects)
         }
     )
@@ -208,7 +210,8 @@ const insert = (project, done) => {
             if (err) return next(err);
             creatorsModel.insert(projectId, project.creators, err => {
                 if (err) return next(err);
-                if (!project.hasOwnProperty('rewards')) return next(null, projectId);
+                console.log(project.rewards);
+                if (!project.hasOwnProperty('rewards') || !Array.isArray(project.rewards) || project.rewards.length===0) return next(null, projectId);
                 rewardsModel.insert(projectId, project.rewards, err => {
                     return next(err, projectId);
                 })
