@@ -52,7 +52,7 @@ const getAll = (options, done) => {
     if (whereConditions.length > 0) whereCondition = ' WHERE ' + whereConditions.join(' AND ');
 
     // finalise SQL
-    let sql = `SELECT DISTINCT pr.id, pr.title, pr.subtitle, pr.open, exists(select 1 from images where images.projectid=2) as hasImage, pr.ts
+    let sql = `SELECT DISTINCT pr.id, pr.title, pr.subtitle, pr.open, exists(select 1 from images where images.projectid=pr.id) as hasImage, pr.ts
      FROM projects pr ${joinTables}${joinCondition}${whereCondition}
      ORDER BY pr.ts DESC LIMIT ? OFFSET ?`;
     log.debug(sql, [options.count, options.startIndex]);
@@ -93,9 +93,9 @@ const getOne = (projectId, done) => {
             db.get().query(
                 'SELECT title, subtitle, description, target, open, ' +
                 'unix_timestamp(ts)*1000 as creationDate, ' +
-                'exists(select 1 from images where images.projectid=2) as hasImage ' +
+                'exists(select 1 from images where images.projectid=?) as hasImage ' +
                 'from projects WHERE id=?',
-                projectId,
+                [projectId, projectId],
                 (err, projects) => {
                     if (err) return reject(err);
                     if (projects.length === 0) return resolve(null);
@@ -210,7 +210,6 @@ const insert = (project, done) => {
             if (err) return next(err);
             creatorsModel.insert(projectId, project.creators, err => {
                 if (err) return next(err);
-                console.log(project.rewards);
                 if (!project.hasOwnProperty('rewards') || !Array.isArray(project.rewards) || project.rewards.length===0) return next(null, projectId);
                 rewardsModel.insert(projectId, project.rewards, err => {
                     return next(err, projectId);
